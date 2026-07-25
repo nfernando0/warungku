@@ -44,7 +44,7 @@
                     <flux:button wire:click="$set('category_id', {{ $category->id }})"
                         variant="{{ $category_id === $category->id ? 'primary' : 'ghost' }}" size="sm"
                         class="opacity-60 hover:opacity-100">
-                        {{ $category->name }} (0)
+                        {{ $category->name }}
                     </flux:button>
                 @endforeach
             </div>

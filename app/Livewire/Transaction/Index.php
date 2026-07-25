@@ -10,7 +10,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.transaction.index', [
-            'transactions' => Transaction::get(),
+            'transactions' => Transaction::with(['transactionDetails.product', 'user'])->get(),
         ]);
     }
 }
