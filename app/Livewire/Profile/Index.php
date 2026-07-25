@@ -38,6 +38,15 @@ class Index extends Component
         $this->isEditing = !$this->isEditing;
     }
 
+    public function logout()
+    {
+        auth()->guard('web')->logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        return redirect()->route('home');
+    }
+
     public function save(): void
     {
         if (!$this->isEditing) return;

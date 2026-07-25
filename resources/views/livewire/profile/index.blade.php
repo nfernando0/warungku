@@ -110,6 +110,13 @@
                         Simpan Perubahan
                     </flux:button>
                 </div>
+            @else
+                <div class="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                    <flux:button type="button" wire:click="logout" variant="primary" size="sm"
+                        icon="arrow-right-start-on-rectangle">
+                        Log Out
+                    </flux:button>
+                </div>
             @endif
         </form>
     </flux:card>
