@@ -24,4 +24,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('pesanan', App\Livewire\Pesanan\Index::class)->name('pesanan.index');
 });
 
+Route::middleware(['auth'])->group(function () {
+    // Route Halaman Kasir / POS
+    Route::get('/kasir', App\Livewire\Kasir\Index::class)->name('kasir.index');
+});
+
 require __DIR__ . '/settings.php';

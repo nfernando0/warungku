@@ -13,7 +13,7 @@
     <!-- Navbar Khusus User Biasa / Publik -->
     <nav class="bg-indigo-600 text-white shadow-sm p-4">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <a href="/" class="font-bold text-xl">Portal Pelanggan</a>
+            <a href="/" class="font-bold text-xl">WarungKu</a>
             <div class="space-x-4 flex">
                 @auth
                     <!-- Ditampilkan HANYA jika user SUDAH login -->
@@ -39,7 +39,7 @@
 
     <!-- Footer Khusus -->
     <footer class="text-center text-slate-400 text-sm mt-12 py-6 border-t border-slate-200">
-        &copy; {{ date('Y') }} Portal Pelanggan.
+        &copy; {{ date('Y') }} WarungKu.
     </footer>
 
     @fluxScripts

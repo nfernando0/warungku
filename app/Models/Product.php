@@ -15,16 +15,33 @@ class Product extends Model
     public static function generateSku(int $categoryId): string
     {
         $category = Category::findOrFail($categoryId);
-        $prefix = strtoupper(Str::substr(Str::slug($category->name), 0, 3));
 
+        // 1. Ambil prefix (pasti 3 karakter uppercase, aman jika nama pendek)
+        $prefix = Str::of($category->name)
+            ->slug()
+            ->upper()
+            ->substr(0, 3)
+            ->padRight(3, 'X') // Tambahkan 'X' jika kurang dari 3 huruf (cth: "ITX")
+            ->toString();
+
+        // 2. Cari produk terakhir berdasarkan ID terbesar
         $lastProduct = self::where('sku', 'like', "{$prefix}-%")
             ->orderByDesc('id')
             ->first();
 
-        $lastNumber = $lastProduct
-            ? (int) Str::afterLast($lastProduct->sku, '-')
-            : 0;
+        // 3. Ambil nomor terakhir secara aman
+        $lastNumber = 0;
 
+        if ($lastProduct) {
+            $lastSegment = Str::afterLast($lastProduct->sku, '-');
+
+            // Pastikan segmen terakhir benar-benar berupa angka murni
+            if (is_numeric($lastSegment)) {
+                $lastNumber = (int) $lastSegment;
+            }
+        }
+
+        // 4. Format nomor urut baru (contoh: 0001, 0002)
         $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
         return "{$prefix}-{$newNumber}";

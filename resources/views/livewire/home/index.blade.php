@@ -62,6 +62,7 @@
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             @foreach ($products as $product)
                 <flux:card class="flex flex-col gap-2">
+                    <!-- Header Badge (Kategori & Status Stok) -->
                     <div class="flex items-start justify-between">
                         <flux:badge size="sm" color="zinc">{{ $product->category->name }}</flux:badge>
                         @if ($product->stock <= 0)
@@ -69,7 +70,20 @@
                         @endif
                     </div>
 
-                    <flux:heading size="sm">{{ $product->name }}</flux:heading>
+                    <!-- Gambar Produk -->
+                    <div
+                        class="relative my-2 aspect-square w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        @if ($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                class="h-full w-full object-cover" />
+                        @else
+                            <!-- Fallback jika produk belum memiliki gambar -->
+                            <flux:icon icon="photo" class="h-10 w-10 text-zinc-400" />
+                        @endif
+                    </div>
+
+                    <!-- Informasi Produk -->
+                    <flux:heading size="sm" class="line-clamp-1">{{ $product->name }}</flux:heading>
                     <flux:text size="sm" class="text-zinc-500">SKU: {{ $product->sku }}</flux:text>
 
                     <div class="mt-auto flex items-center justify-between pt-2">
@@ -77,10 +91,11 @@
                             Rp{{ number_format($product->price, 0, ',', '.') }}
                         </flux:text>
                         <flux:text size="sm" class="text-zinc-500">
-                            {{ $product->stock }} {{ $product->unit }}
+                            {{ $product->stock }} {{ $product->unit ?? 'pcs' }}
                         </flux:text>
                     </div>
 
+                    <!-- Tombol Tambah ke Keranjang -->
                     <flux:button wire:click="addToCart({{ $product->id }})" variant="primary" size="sm"
                         :disabled="$product->stock <= 0" class="mt-2 w-full">
                         Tambah
