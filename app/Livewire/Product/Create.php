@@ -4,17 +4,18 @@ namespace App\Livewire\Product;
 
 use App\Models\Category;
 use App\Models\Product;
+use Livewire\WithFileUploads;
 use Flux\Flux;
 use Livewire\Component;
 
 class Create extends Component
 {
-    public $category_id;
-    public $sku;
-    public $name;
-    public $stock;
-    public $unit;
-    public $price;
+
+    use WithFileUploads;
+
+    public $category_id, $sku, $barcode, $name, $price, $cost_price, $stock, $min_stock, $unit, $description;
+    public $image; // Properti untuk menampung file upload
+    public $is_active = true;
 
     public function updatedCategoryId($value)
     {
@@ -32,16 +33,40 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate([
+        $validated = $this->validate([
+            // Identitas & Relasi
             'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|unique:products,sku',
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|numeric|min:0',
-            'unit' => 'required',
+            'sku'         => 'required|string|unique:products,sku',
+            'barcode'     => 'nullable|string|unique:products,barcode',
+            'name'        => 'required|string|max:255',
+            'image'       => 'nullable|image|max:2048', // Max 2MB (opsional)
+            'description' => 'nullable|string',
+
+            // Harga & Stok
+            'cost_price'  => 'nullable|numeric|min:0',  // Harga modal/HPP
+            'price'       => 'required|numeric|min:0',  // Harga jual
+            'stock'       => 'required|integer|min:0',
+            'min_stock'   => 'nullable|integer|min:0',  // Batas peringatan stok
+            'unit'        => 'required|string|max:20',  // pcs, kg, renteng, dll.
+
+            // Status
+            'is_active'   => 'boolean',
         ]);
 
-        Product::create($this->only(['category_id', 'sku', 'name', 'price', 'stock', 'unit']));
+        if (empty($validated['barcode'])) {
+            // Contoh Opsi A: Samakan barcode dengan SKU
+            $validated['barcode'] = $validated['sku'];
+
+            // Contoh Opsi B: Buat Barcode Angka Unik (Misal: 899 + 10 digit acak khas produk Indonesia)
+            // $validated['barcode'] = '899' . mt_rand(100000000, 999999999);
+        }
+
+        if ($this->image) {
+            // Menyimpan ke 'storage/app/public/products' dan mengembalikan path-nya
+            $validated['image'] = $this->image->store('products', 'public');
+        }
+
+        Product::create($validated);
 
         $this->reset();
         session()->flash('message', 'Produk berhasil ditambahkan.');

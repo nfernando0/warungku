@@ -19,27 +19,35 @@
                     wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
-                <flux:sidebar.item icon="home" :href="route('category.index')"
+
+                <flux:sidebar.item icon="squares-2x2" :href="route('category.index')"
                     :current="request()->routeIs('category.*')" wire:navigate>
                     {{ __('Category') }}
                 </flux:sidebar.item>
-                <flux:sidebar.item icon="home" :href="route('product.index')"
+
+                <flux:sidebar.item icon="shopping-bag" :href="route('product.index')"
                     :current="request()->routeIs('product.*')" wire:navigate>
                     {{ __('Product') }}
                 </flux:sidebar.item>
-                <flux:sidebar.item icon="home" :href="route('transaction.index')"
+
+                <flux:sidebar.item icon="banknotes" :href="route('transaction.index')"
                     :current="request()->routeIs('transaction.*')" wire:navigate>
                     {{ __('Transaction') }}
                 </flux:sidebar.item>
-                <flux:sidebar.item icon="home" :href="route('user.index')" :current="request()->routeIs('user.*')"
-                    wire:navigate>
-                    {{ __('User') }}
-                </flux:sidebar.item>
+
+
 
             </flux:sidebar.group>
         </flux:sidebar.nav>
 
         <flux:spacer />
+
+        <flux:sidebar.nav>
+            <flux:sidebar.item icon="users" :href="route('user.index')" :current="request()->routeIs('user.*')"
+                wire:navigate>
+                {{ __('User') }}
+            </flux:sidebar.item>
+        </flux:sidebar.nav>
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
     </flux:sidebar>
