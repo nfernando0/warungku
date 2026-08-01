@@ -8,7 +8,7 @@
         <flux:button href="{{ route('category.create') }}">Tambah Category</flux:button>
     </div>
 
-    <div class="mt-4 rounded-md p-3 bg-neutral-900 shadow">
+    <div class="mt-4 rounded-md p-3 bg-white dark:bg-neutral-900 shadow">
         <flux:table :paginate="$categories">
             <flux:table.columns>
                 <flux:table.column>Name</flux:table.column>
