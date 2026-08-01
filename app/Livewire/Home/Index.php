@@ -3,8 +3,11 @@
 namespace App\Livewire\Home;
 
 use App\Models\Category;
+use Illuminate\Support\Str;
 use App\Models\Product;
 use App\Models\Transaction;
+use Illuminate\Container\Attributes\DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
@@ -18,7 +21,7 @@ class Index extends Component
     public $category_id = null;
     public $search = '';
 
-    public function addToCart($productId)  // <-- harus sejajar di sini
+    public function addToCart($productId)
     {
         if (! auth()->check()) {
             return redirect()->route('login');
@@ -26,37 +29,60 @@ class Index extends Component
 
         $product = Product::findOrFail($productId);
 
-        // Cari cart aktif user, atau buat baru kalau belum ada
-        $cart = Transaction::firstOrCreate(
-            ['user_id' => auth()->id(), 'status' => 'cart'],
-            [
-                'transaction_code' => 'TRX-' . strtoupper(uniqid()),
-                'total' => 0,
-                'payment_method' => 'cash',
-                'paid_amount' => 0,
-            ]
-        );
-
-        // Kalau produk sudah ada di cart, tambah qty. Kalau belum, buat baru.
-        $detail = $cart->transactionDetails()->where('product_id', $productId)->first();
-
-        if ($detail) {
-            $detail->increment('quantity');
-            $detail->update(['subtotal' => $detail->quantity * $detail->price]);
-        } else {
-            $cart->transactionDetails()->create([
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'price' => $product->price,
-                'quantity' => 1,
-                'subtotal' => $product->price,
-            ]);
+        // 1. Cek ketersediaan stok
+        if ($product->stock <= 0) {
+            session()->flash('error', 'Stok produk ini sedang habis.');
+            return;
         }
 
-        $cart->update(['total' => $cart->transactionDetails()->sum('subtotal')]);
+        FacadesDB::transaction(function () use ($product, $productId) {
+            // 2. Cari cart aktif user, atau buat baru kalau belum ada
+            $cart = Transaction::firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'status'  => 'cart',
+                ],
+                [
+                    'transaction_code' => 'TRX-' . now()->format('YmdHis') . '-' . Str::random(4),
+                    'total'            => 0,
+                    'payment_method'   => 'cash',
+                    'paid_amount'      => 0,
+                    'subtotal' => 0,
+                    'customer_name' => auth()->user()->name,
+                ]
+            );
 
+            // 3. Cek item di detail keranjang
+            $detail = $cart->transactionDetails()->where('product_id', $productId)->first();
+
+            if ($detail) {
+                // Pastikan penambahan qty tidak melebihi stok yang tersedia
+                if ($detail->quantity < $product->stock) {
+                    $detail->increment('quantity');
+                    $detail->update(['subtotal' => $detail->quantity * $detail->price]);
+                } else {
+                    session()->flash('error', 'Jumlah melebihi stok yang tersedia.');
+                    return;
+                }
+            } else {
+                $cart->transactionDetails()->create([
+                    'product_id'   => $product->id,
+                    'product_name' => $product->name,
+                    'price'        => $product->price,
+                    'quantity'     => 1,
+                    'subtotal'     => $product->price,
+                ]);
+            }
+
+            // 4. Update total tagihan di tabel transaksi utama
+            $cart->update([
+                'total' => $cart->transactionDetails()->sum('subtotal'),
+            ]);
+        });
+
+        // Fire event ke komponen lain (jika ada header cart counter)
         $this->dispatch('cart-updated');
-        session()->flash('message', 'Produk ditambahkan ke keranjang.');
+        session()->flash('message', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
     public function render()

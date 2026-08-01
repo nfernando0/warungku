@@ -8,7 +8,7 @@
         <flux:button href="{{ route('product.create') }}">Tambah Produk</flux:button>
     </div>
 
-    <div class="mt-4 border rounded-md p-3 bg-gray-500 shadow">
+    <div class="mt-4 rounded-md p-3 bg-neutral-900 shadow">
         <flux:table :paginate="$products">
             <flux:table.columns>
                 <flux:table.column>Name</flux:table.column>

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'transaction_code', 'total', 'payment_method', 'paid_amount', 'change_amount', 'transaction_date',])]
+#[Fillable(['user_id', 'transaction_code', 'total', 'payment_method', 'paid_amount', 'change_amount', 'transaction_date', 'subtotal', 'discount', 'profit', 'snap_token', 'payment_status', 'pdf_url', 'notes', 'status', 'payment_type', 'customer_name'])]
 class Transaction extends Model
 {
 

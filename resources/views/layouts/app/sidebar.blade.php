@@ -81,7 +81,7 @@
                     <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                         {{ __('Settings') }}
                     </flux:menu.item>
-                    <flux:menu.item :href="route('home')" icon="home" wire:navigate>
+                    <flux:menu.item :href="route('home')" icon="home">
                         {{ __('Home') }}
                     </flux:menu.item>
                 </flux:menu.radio.group>
