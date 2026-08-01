@@ -18,98 +18,85 @@
                 </div>
             </div>
 
-            <!-- Filter Kategori (Dummy) -->
-            <div class="flex gap-2 overflow-x-auto pb-2">
-                <flux:button size="sm" variant="primary">Semua</flux:button>
-                <flux:button size="sm" variant="subtle">Makanan</flux:button>
-                <flux:button size="sm" variant="subtle">Minuman</flux:button>
-                <flux:button size="sm" variant="subtle">Sembako</flux:button>
-                <flux:button size="sm" variant="subtle">Snack</flux:button>
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <!-- Tombol Semua Kategori -->
+                <flux:button wire:click="selectCategory(null)" size="sm"
+                    :variant="$selectedCategory === null ? 'primary' : 'subtle'">
+                    Semua
+                </flux:button>
+
+                <!-- Looping Kategori dari Database -->
+                @foreach ($categories as $category)
+                    <flux:button wire:key="category-{{ $category->id }}"
+                        wire:click="selectCategory({{ $category->id }})" size="sm"
+                        :variant="$selectedCategory === $category->id ? 'primary' : 'subtle'">
+                        {{ $category->name }}
+                    </flux:button>
+                @endforeach
             </div>
 
-            <!-- Grid Produk (Data Dummy) -->
+            <!-- Grid Produk -->
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
 
-                <!-- Item Dummy 1 -->
-                <flux:card class="flex flex-col justify-between p-3 gap-2">
-                    <div class="flex items-center justify-between">
-                        <flux:badge size="sm" color="zinc">Minuman</flux:badge>
-                    </div>
-                    <div
-                        class="relative my-1 aspect-square w-full overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <flux:icon icon="photo" class="h-8 w-8 text-zinc-400" />
-                    </div>
-                    <div>
-                        <flux:heading size="sm" class="line-clamp-1">Teh Pucuk Harum 350ml</flux:heading>
-                        <flux:text size="xs" class="text-zinc-500">SKU: MIN-0001</flux:text>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <flux:text class="font-bold text-sm">Rp5.000</flux:text>
-                        <flux:text size="xs" class="text-zinc-500">Stok: 45</flux:text>
-                    </div>
-                    <flux:button variant="primary" size="sm" class="w-full mt-1">+ Tambah</flux:button>
-                </flux:card>
+                @forelse ($products as $product)
+                    <flux:card wire:key="product-{{ $product->id }}" class="flex flex-col justify-between p-3 gap-2">
+                        <!-- Badge Kategori -->
+                        <div class="flex items-center justify-between">
+                            <flux:badge size="sm" color="zinc">
+                                {{ $product->category->name ?? 'Umum' }}
+                            </flux:badge>
+                        </div>
 
-                <!-- Item Dummy 2 -->
-                <flux:card class="flex flex-col justify-between p-3 gap-2">
-                    <div class="flex items-center justify-between">
-                        <flux:badge size="sm" color="zinc">Makanan</flux:badge>
-                    </div>
-                    <div
-                        class="relative my-1 aspect-square w-full overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <flux:icon icon="photo" class="h-8 w-8 text-zinc-400" />
-                    </div>
-                    <div>
-                        <flux:heading size="sm" class="line-clamp-1">Indomie Goreng Spesial</flux:heading>
-                        <flux:text size="xs" class="text-zinc-500">SKU: MAK-0002</flux:text>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <flux:text class="font-bold text-sm">Rp3.500</flux:text>
-                        <flux:text size="xs" class="text-zinc-500">Stok: 120</flux:text>
-                    </div>
-                    <flux:button variant="primary" size="sm" class="w-full mt-1">+ Tambah</flux:button>
-                </flux:card>
+                        <!-- Gambar Produk -->
+                        <div
+                            class="relative my-1 aspect-square w-full overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            @if ($product->image)
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                    class="w-full h-full object-cover" />
+                            @else
+                                <flux:icon icon="photo" class="h-8 w-8 text-zinc-400" />
+                            @endif
+                        </div>
 
-                <!-- Item Dummy 3 -->
-                <flux:card class="flex flex-col justify-between p-3 gap-2">
-                    <div class="flex items-center justify-between">
-                        <flux:badge size="sm" color="zinc">Sembako</flux:badge>
-                    </div>
-                    <div
-                        class="relative my-1 aspect-square w-full overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <flux:icon icon="photo" class="h-8 w-8 text-zinc-400" />
-                    </div>
-                    <div>
-                        <flux:heading size="sm" class="line-clamp-1">Minyak Goreng Sania 1L</flux:heading>
-                        <flux:text size="xs" class="text-zinc-500">SKU: SMB-0003</flux:text>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <flux:text class="font-bold text-sm">Rp18.500</flux:text>
-                        <flux:text size="xs" class="text-zinc-500">Stok: 15</flux:text>
-                    </div>
-                    <flux:button variant="primary" size="sm" class="w-full mt-1">+ Tambah</flux:button>
-                </flux:card>
+                        <!-- Detail Produk -->
+                        <div>
+                            <flux:heading size="sm" class="line-clamp-1" title="{{ $product->name }}">
+                                {{ $product->name }}
+                            </flux:heading>
+                            <flux:text size="xs" class="text-zinc-500">
+                                SKU: {{ $product->sku ?? '-' }}
+                            </flux:text>
+                        </div>
 
-                <!-- Item Dummy 4 (Stok Habis) -->
-                <flux:card class="flex flex-col justify-between p-3 gap-2 opacity-75">
-                    <div class="flex items-center justify-between">
-                        <flux:badge size="sm" color="zinc">Snack</flux:badge>
-                        <flux:badge size="sm" color="red">Habis</flux:badge>
+                        <!-- Harga & Stok -->
+                        <div class="flex items-center justify-between pt-1">
+                            <flux:text class="font-bold text-sm">
+                                Rp{{ number_format($product->price, 0, ',', '.') }}
+                            </flux:text>
+                            <flux:text size="xs"
+                                class="{{ $product->stock > 0 ? 'text-zinc-500' : 'text-red-500 font-medium' }}">
+                                Stok: {{ $product->stock }}
+                            </flux:text>
+                        </div>
+
+                        <!-- Tombol Tambah ke Keranjang -->
+                        <flux:button wire:click="addToCart({{ $product->id }})" variant="primary" size="sm"
+                            class="w-full mt-1" :disabled="$product->stock <= 0">
+                            {{ $product->stock > 0 ? '+ Tambah' : 'Stok Habis' }}
+                        </flux:button>
+                    </flux:card>
+                @empty
+                    <!-- Empty State (Jika produk tidak ditemukan) -->
+                    <div class="col-span-full flex flex-col items-center justify-center py-12 text-zinc-400">
+                        <flux:icon icon="magnifying-glass" class="w-12 h-12 mb-3 opacity-40" />
+                        <flux:heading size="lg" class="text-zinc-600 dark:text-zinc-300">
+                            Produk Tidak Ditemukan
+                        </flux:heading>
+                        <flux:text size="sm" class="text-zinc-400">
+                            Coba gunakan kata kunci pencarian lain atau pilih kategori berbeda.
+                        </flux:text>
                     </div>
-                    <div
-                        class="relative my-1 aspect-square w-full overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <flux:icon icon="photo" class="h-8 w-8 text-zinc-400" />
-                    </div>
-                    <div>
-                        <flux:heading size="sm" class="line-clamp-1">Chitato Sapi Panggang 68g</flux:heading>
-                        <flux:text size="xs" class="text-zinc-500">SKU: SNK-0004</flux:text>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <flux:text class="font-bold text-sm">Rp11.000</flux:text>
-                        <flux:text size="xs" class="text-red-500 font-medium">Stok: 0</flux:text>
-                    </div>
-                    <flux:button variant="primary" size="sm" class="w-full mt-1" disabled>+ Tambah</flux:button>
-                </flux:card>
+                @endforelse
 
             </div>
         </div>
@@ -117,94 +104,111 @@
         <!-- ========================================== -->
         <!-- KOLOM KANAN: KERANJANG BELANJA (lg:col-span-5) -->
         <!-- ========================================== -->
-        <div class="lg:col-span-5 xl:col-span-4">
-            <flux:card class="sticky top-6 flex flex-col h-[calc(100vh-5rem)] justify-between">
+        @if ($showCart)
+            <div class="lg:col-span-5 xl:col-span-4">
+                <flux:card class="sticky top-6 flex flex-col h-[calc(100vh-5rem)] justify-between">
 
-                <!-- Header Keranjang -->
-                <div class="flex items-center justify-between border-b pb-3 border-zinc-200 dark:border-zinc-700">
-                    <flux:heading class="flex items-center gap-2 p-6">
-                        <flux:icon icon="shopping-bag" /> Keranjang Belanja
-                    </flux:heading>
-                    <flux:button variant="ghost" size="sm" color="red">
-                        Bersihkan
-                    </flux:button>
-                </div>
+                    <!-- Header Keranjang -->
+                    <div class="flex items-center justify-between border-b pb-3 border-zinc-200 dark:border-zinc-700">
+                        <flux:heading class="flex items-center gap-2 p-2">
+                            <flux:icon icon="shopping-bag" /> Keranjang Belanja
+                        </flux:heading>
 
-                <!-- Daftar Item Belanja (Dummy Cart Items) -->
-                <div class="flex-1 overflow-y-auto my-3 space-y-3 pr-1">
-
-                    <!-- Item Cart Dummy 1 -->
-                    <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-                        <div class="flex-1">
-                            <flux:heading size="sm" class="line-clamp-1">Teh Pucuk Harum 350ml</flux:heading>
-                            <flux:text size="xs" class="text-zinc-500">Rp5.000 x 2</flux:text>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="number" value="2"
-                                class="w-12 text-center text-sm border rounded p-1 dark:bg-zinc-900 dark:border-zinc-700" />
-                            <flux:button variant="subtle" size="sm" icon="trash" />
-                        </div>
+                        @if (count($cart) > 0)
+                            <flux:button wire:click="clearCart" variant="ghost" size="sm" color="red">
+                                Bersihkan
+                            </flux:button>
+                        @endif
                     </div>
 
-                    <!-- Item Cart Dummy 2 -->
-                    <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-                        <div class="flex-1">
-                            <flux:heading size="sm" class="line-clamp-1">Minyak Goreng Sania 1L</flux:heading>
-                            <flux:text size="xs" class="text-zinc-500">Rp18.500 x 1</flux:text>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="number" value="1"
-                                class="w-12 text-center text-sm border rounded p-1 dark:bg-zinc-900 dark:border-zinc-700" />
-                            <flux:button variant="subtle" size="sm" icon="trash" />
-                        </div>
+                    <!-- Daftar Item Belanja (Dinamis) -->
+                    <div class="flex-1 overflow-y-auto my-3 space-y-3 pr-1">
+                        @forelse ($cart as $index => $item)
+                            <div wire:key="cart-item-{{ $item['id'] }}"
+                                class="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
+                                <div class="flex-1 pr-2">
+                                    <flux:heading size="sm" class="line-clamp-1" title="{{ $item['name'] }}">
+                                        {{ $item['name'] }}
+                                    </flux:heading>
+                                    <flux:text size="xs" class="text-zinc-500">
+                                        Rp{{ number_format($item['price'], 0, ',', '.') }} x {{ $item['qty'] }}
+                                    </flux:text>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" min="1" max="{{ $item['stock'] }}"
+                                        value="{{ $item['qty'] }}"
+                                        wire:change="updateQty({{ $index }}, $event.target.value)"
+                                        class="w-14 text-center text-sm border rounded p-1 dark:bg-zinc-900 dark:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                                    <flux:button wire:click="removeItem({{ $index }})" variant="subtle"
+                                        size="sm" icon="trash" />
+                                </div>
+                            </div>
+                        @empty
+                            <!-- Display saat keranjang kosong -->
+                            <div class="flex flex-col items-center justify-center h-full text-zinc-400 py-10">
+                                <flux:icon icon="shopping-bag" class="w-12 h-12 mb-2 opacity-40" />
+                                <flux:text class="text-sm">Keranjang masih kosong</flux:text>
+                            </div>
+                        @endforelse
                     </div>
 
-                </div>
+                    <!-- Ringkasan & Form Pembayaran Dinamis -->
+                    <div class="border-t pt-3 space-y-3 border-zinc-200 dark:border-zinc-700">
 
-                <!-- Ringkasan & Form Pembayaran Dummy -->
-                <div class="border-t pt-3 space-y-3 border-zinc-200 dark:border-zinc-700">
-                    <!-- Subtotal & Total -->
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center text-sm text-zinc-500">
-                            <flux:text>Subtotal Item (3 pcs):</flux:text>
-                            <flux:text class="font-medium">Rp28.500</flux:text>
+                        <!-- Subtotal & Total -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center text-sm text-zinc-500">
+                                <flux:text>Subtotal Item ({{ $this->totalQty }} pcs):</flux:text>
+                                <flux:text class="font-medium">
+                                    Rp{{ number_format($this->totalPrice, 0, ',', '.') }}
+                                </flux:text>
+                            </div>
+                            <div class="flex justify-between items-center text-lg font-bold">
+                                <flux:text>Total Tagihan:</flux:text>
+                                <flux:text size="xl" class="text-emerald-600 dark:text-emerald-400">
+                                    Rp{{ number_format($this->totalPrice, 0, ',', '.') }}
+                                </flux:text>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center text-lg font-bold">
-                            <flux:text>Total Tagihan:</flux:text>
-                            <flux:text size="xl" class="text-emerald-600 dark:text-emerald-400">
-                                Rp28.500
+
+                        <!-- Input Nominal Uang Bayar -->
+                        <div>
+                            <flux:input type="number" label="Nominal Uang Diterima"
+                                wire:model.live.debounce.300ms="paymentAmount" />
+                        </div>
+
+                        <!-- Shortcut Nominal Uang Cepat -->
+                        <div class="grid grid-cols-3 gap-1">
+                            <flux:button wire:click="setPayment({{ $this->totalPrice }})" size="xs"
+                                variant="subtle">
+                                Pas
+                            </flux:button>
+                            <flux:button wire:click="setPayment(50000)" size="xs" variant="subtle">
+                                50.000
+                            </flux:button>
+                            <flux:button wire:click="setPayment(100000)" size="xs" variant="subtle">
+                                100.000
+                            </flux:button>
+                        </div>
+
+                        <!-- Display Kembalian -->
+                        <div class="flex justify-between items-center text-sm pt-1">
+                            <flux:text>Kembalian:</flux:text>
+                            <flux:text class="font-bold text-base text-zinc-800 dark:text-zinc-100">
+                                Rp{{ number_format($this->change, 0, ',', '.') }}
                             </flux:text>
                         </div>
+
+                        <!-- Tombol Bayar -->
+                        <flux:button variant="primary" class="w-full"
+                            :disabled="count($cart) === 0 || $paymentAmount < $this->totalPrice">
+                            Bayar Sekarang (F2)
+                        </flux:button>
                     </div>
 
-                    <!-- Input Nominal Uang Bayar -->
-                    <div>
-                        <flux:input type="number" label="Nominal Uang Diterima" value="50000" />
-                    </div>
-
-                    <!-- Shortcut Nominal Uang Cepat (Opsional Kasir) -->
-                    <div class="grid grid-cols-3 gap-1">
-                        <flux:button size="xs" variant="subtle">Pas</flux:button>
-                        <flux:button size="xs" variant="subtle">50.000</flux:button>
-                        <flux:button size="xs" variant="subtle">100.000</flux:button>
-                    </div>
-
-                    <!-- Display Kembalian -->
-                    <div class="flex justify-between items-center text-sm pt-1">
-                        <flux:text>Kembalian:</flux:text>
-                        <flux:text class="font-bold text-base text-zinc-800 dark:text-zinc-100">
-                            Rp21.500
-                        </flux:text>
-                    </div>
-
-                    <!-- Tombol Bayar -->
-                    <flux:button variant="primary" class="w-full">
-                        Bayar Sekarang (F2)
-                    </flux:button>
-                </div>
-
-            </flux:card>
-        </div>
+                </flux:card>
+            </div>
+        @endif
 
     </div>
 </div>

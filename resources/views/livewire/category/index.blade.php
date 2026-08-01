@@ -8,7 +8,7 @@
         <flux:button href="{{ route('category.create') }}">Tambah Category</flux:button>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 border rounded-md p-3 bg-gray-500 shadow">
         <flux:table :paginate="$categories">
             <flux:table.columns>
                 <flux:table.column>Name</flux:table.column>
@@ -48,7 +48,7 @@
     </div>
 
     {{-- Modal Edit Category --}}
-    <flux:modal name="edit-category" class="md:w-96">
+    <flux:modal name="edit-category" class="md:w-96" flyout>
         <form wire:submit="update">
             <div>
                 <flux:heading size="lg">Edit Kategori</flux:heading>

@@ -8,7 +8,7 @@
         <flux:button href="{{ route('product.create') }}">Tambah Produk</flux:button>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 border rounded-md p-3 bg-gray-500 shadow">
         <flux:table :paginate="$products">
             <flux:table.columns>
                 <flux:table.column>Name</flux:table.column>
@@ -30,13 +30,13 @@
                         <flux:table.cell class="text-center">
                             <div class="flex gap-2">
                                 <flux:modal.trigger name="edit-product">
-                                    <flux:button wire:click="edit({{ $product->id }})" icon="pencil-square" size="sm"
-                                        variant="subtle">
+                                    <flux:button wire:click="edit({{ $product->id }})" icon="pencil-square"
+                                        size="xs">Edit
                                     </flux:button>
                                 </flux:modal.trigger>
                                 <flux:modal.trigger name="delete-product">
                                     <flux:button wire:click="confirmDelete({{ $product->id }})" icon="trash"
-                                        size="sm" variant="subtle" aria-label="Hapus produk" />
+                                        size="xs" variant="danger" aria-label="Hapus produk">Delete</flux:button>
                                 </flux:modal.trigger>
                             </div>
                         </flux:table.cell>
